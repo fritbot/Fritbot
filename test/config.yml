@@ -1,0 +1,14 @@
+name: Fritbot
+
+connector:
+    module: shell
+    # host: off-topic.xmpp.slack.com
+    # conference_host: conference.off-topic.xmpp.slack.com
+    # user: fritbot
+    # resource: FritBot
+    # password: off-topic.C4gpMZtp1mBPxZD39WGl
+    # presence: The Angriest Bot
+    # rooms: [bottest]
+
+web:
+    port: 3000

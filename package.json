@@ -2,9 +2,12 @@
   "name": "Fritbot",
   "version": "0.1.0",
   "description": "Fritbot: The Angriest Bot",
-  "main": "index.js",
   "dependencies": {
-    "node-xmpp-client": "~1.0.0-alpha2"
+    "fb-xmpp-connector": "",
+    "js-yaml": "",
+    "express": "",
+    "needle": "",
+    "q": ""
   },
   "devDependencies": {},
   "scripts": {
