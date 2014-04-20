@@ -1,7 +1,7 @@
 name: Fritbot
 
 connector:
-    module: shell
+    module: ./shell
     # host: off-topic.xmpp.slack.com
     # conference_host: conference.off-topic.xmpp.slack.com
     # user: fritbot
@@ -12,3 +12,5 @@ connector:
 
 web:
     port: 3000
+
+module_directory: ../../fb-modules
