@@ -30,7 +30,7 @@ function ShellConnector(bot) {
 	self.bot.events.on('shutdown', self.shutdown.bind(this));
 	self.bot.events.on('sendMessage', self.send.bind(this));
 
-	self.repl.setPrompt(self.bot.config.name + ">");
+	self.repl.setPrompt(self.bot.config.name + "> ");
 	self.repl.prompt();
 
 	self.bot.events.emit('connected');

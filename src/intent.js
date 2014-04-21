@@ -12,14 +12,14 @@ function IntentService(bot) {
 IntentService.prototype.loadCommand = function (spec) {
 	this.commands.push({
 		'trigger': spec.trigger,
-		'func': spec.func.bind(this)
+		'func': spec.func.bind(this.bot)
 	});
 }
 
 IntentService.prototype.loadListener = function (spec) {
 	this.listeners.push({
 		'trigger': spec.trigger,
-		'func': spec.func.bind(this)
+		'func': spec.func.bind(this.bot)
 	});
 }
 
@@ -50,7 +50,7 @@ IntentService.prototype.handleMessage = function (route, message) {
 		// Find all matches
 		for (i = 0; i < this.commands.length; i++) {
 			matched = this.commands[i].trigger.exec(message)
-			if (matched) {
+			if (matched && matched.index == 0) {
 				matched.func = this.commands[i].func
 				matches.push(matched);
 			}
@@ -67,11 +67,37 @@ IntentService.prototype.handleMessage = function (route, message) {
 			}
 
 			matched.func(route, this.splitArgs(message.slice(matched[0].length)))
-		} else {
-			this.bot.send(route, "Huh?");
+			return;
+		}
+	}
+
+	// Check for listener matches
+	matches = [];
+	for (i = 0; i < this.listeners.length; i++) {
+		matched = this.listeners[i].trigger.exec(message)
+
+		if (matched) {
+			matched.func = this.listeners[i].func
+			matches.push(matched);
+		}
+	}
+
+	if (matches.length) {
+		matched = ['']
+
+		// Pick the match that matched the longest substring
+		for (i = 0; i < matches.length; i++) {
+			if (matches[i][0].length > matched[0].length) {
+				matched = matches[i]
+			}
 		}
 
+		matched.func(route, message)
 		return;
+	}
+
+	if (isCommand) {
+		this.bot.send(route, "Huh?");
 	}
 }
 
