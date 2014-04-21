@@ -31,8 +31,8 @@ function ShellConnector(bot) {
 
 ShellConnector.prototype.send = function (route, message, deferred) {
 	console.log("-->", message);
-	deferred.resolve();
 	this.repl.prompt();
+	deferred.resolve();
 }
 
 ShellConnector.prototype.shutdown = function () {
@@ -42,12 +42,12 @@ ShellConnector.prototype.shutdown = function () {
 
 ShellConnector.prototype.joinRoom = function (room) {
 	console.log('Joining Room', room);
-	self.bot.events.emit('joinedRoom', room);
+	this.bot.events.emit('joinedRoom', room);
 }
 
 ShellConnector.prototype.leaveRoom = function (room) {
 	console.log('Leaving Room', room);
-	self.bot.events.emit('leftRoom', room);
+	this.bot.events.emit('leftRoom', room);
 }
 
 module.exports = ShellConnector

@@ -42,11 +42,11 @@ Bot.prototype.send = function (route, message, delay) {
 	if (!delay) {
 		delay = 0
 		console.log("Sending '" + message + "' to", route)
-		return this.events.emit('sendMessage', route, message, deferred);
+		this.events.emit('sendMessage', route, message, deferred);
 	} else {
 		console.log("Sending (delay", delay, "s) '", message, "' to ", route)
 		setTimeout((function () {
-			return this.events.emit('sendMessage', route, message, deferred);
+			this.events.emit('sendMessage', route, message, deferred);
 		}).bind(this), delay * 1000);
 	}
 

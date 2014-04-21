@@ -20,6 +20,15 @@ IntentService.prototype.loadListener = function (spec) {
 	});
 }
 
+IntentService.prototype.splitArgs = function (message) {
+	var args = message.match(/(?:[^\s"]+|"[^"]*")+/g);
+	if (args) {
+		return args
+	} else {
+		return message
+	}
+}
+
 IntentService.prototype.handleMessage = function (route, message) {
 	var matches = [],
 		i, matched;
@@ -43,8 +52,7 @@ IntentService.prototype.handleMessage = function (route, message) {
 			}
 		}
 
-		console.log(matched)
-		matched.func(route, message.slice(matched[0].length))
+		matched.func(route, this.splitArgs(message.slice(matched[0].length)))
 	}
 }
 
