@@ -1,10 +1,12 @@
 
 var express = require('express'),
-	router = require('./router');
+	router = require('./router'),
+	settings = require('./settings');
 
 function Web(bot) {
 	this.bot = bot;
 	this.app = express();
+	settings(this.app);
 	router(this.app);
 	this.server = this.app.listen(this.bot.config.web.port);
 	console.log("Web listening on port", this.bot.config.web.port);

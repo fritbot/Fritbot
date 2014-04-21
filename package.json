@@ -6,6 +6,8 @@
     "fb-xmpp-connector": "",
     "js-yaml": "",
     "express": "",
+    "errorhandler": "",
+    "jade": "",
     "needle": "",
     "q": ""
   },
