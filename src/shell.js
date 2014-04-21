@@ -15,7 +15,15 @@ function ShellConnector(bot) {
 	});
 
 	self.repl.on('line', function(buffer) {
-		self.bot.events.emit('sawMessage', {user: null, room: null}, buffer);		
+		// Very simple room emulation
+		var match = buffer.match(/([a-z]+)\> ?/i);
+
+		if(match) {
+			self.bot.events.emit('sawMessage', {user: "console", room: match[1]}, buffer.slice(match[0].length));	
+		} else {
+			self.bot.events.emit('sawMessage', {user: "console", room: null}, buffer);
+		}
+	
 		self.repl.prompt();
 	})
 

@@ -2,6 +2,7 @@ var events = require('events'),
 	Web = require('./web'),
 	ModuleLoader = require('./modules'),
 	IntentService = require('./intent'),
+	HistoryService = require('./history'),
 	config = require('./config'),
 	Q = require('q');
 
@@ -15,6 +16,7 @@ function Bot() {
 	this.web = new Web(this);
 	this.intent = new IntentService(this);
 	this.modules = new ModuleLoader(this);
+	this.history = new HistoryService(this);
 
 	// Turn on the connector
 	this.connect();

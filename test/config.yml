@@ -1,7 +1,9 @@
 name: Fritbot
+responds_to: [fritbot, fb, bot]
 
 connector:
     module: ./shell
+    # module: fb-xmpp-connector
     # host: off-topic.xmpp.slack.com
     # conference_host: conference.off-topic.xmpp.slack.com
     # user: fritbot
