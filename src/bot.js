@@ -14,9 +14,9 @@ function Bot() {
 
 	// Setup the functional bits
 	this.web = new Web(this);
+	this.history = new HistoryService(this);
 	this.intent = new IntentService(this);
 	this.modules = new ModuleLoader(this);
-	this.history = new HistoryService(this);
 
 	// Turn on the connector
 	this.connect();
