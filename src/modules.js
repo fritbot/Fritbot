@@ -7,8 +7,7 @@ function ModuleLoader(bot) {
 
     var local_dir = this.bot.config.module_directory || 'modules',
         node_modules_dir = this.bot.config.node_directory || 'node_modules',
-        npm_modules, local_modules
-        local_modules = fs.readdirSync(local_dir),
+        npm_modules, local_modules,
         name, module, modules = [], package_json = undefined;
 
     try {
