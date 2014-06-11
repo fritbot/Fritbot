@@ -24,7 +24,7 @@ function ModuleLoader(bot) {
 
 
     modules = npm_modules.concat(local_modules.map(function (x) {
-        return path.join(local_dir, x);
+        return path.join(process.cwd(), local_dir, x);
     }))
 
     console.log("Beginning module load...");
@@ -42,9 +42,10 @@ function ModuleLoader(bot) {
         try {
             package_json = require(path.join(name, "package.json"));
         } catch (e) {
-            package_json = undefined;
-            console.log("Error loading package.json for", name, ", ignoring this module.");
-            continue;
+            package_json = {
+                'name': name
+            };
+            console.log("Error loading package.json for", name, ", going to fake it till you make it.");
         }
         
         try {
