@@ -7,9 +7,22 @@ function ModuleLoader(bot) {
 
     var local_dir = this.bot.config.module_directory || 'modules',
         node_modules_dir = this.bot.config.node_directory || 'node_modules',
-        npm_modules = fs.readdirSync(node_modules_dir),
+        npm_modules, local_modules
         local_modules = fs.readdirSync(local_dir),
         name, module, modules = [], package_json = undefined;
+
+    try {
+        npm_modules = fs.readdirSync(node_modules_dir);
+    } catch (e) {
+        console.log("Error reading node_modules dir,", node_modules_dir, "\n", e, "\nWon't be loading modules from there.")
+    }
+
+    try {
+        local_modules = fs.readdirSync(local_dir);
+    } catch (e) {
+        console.log("Error reading modules dir", local_dir, "\n", e, "\nWon't be loading modules from there.")
+    }
+
 
     modules = npm_modules.concat(local_modules.map(function (x) {
         return path.join(local_dir, x);
