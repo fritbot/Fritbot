@@ -48,6 +48,8 @@ ShellConnector.prototype.send = function (route, message, deferred) {
 ShellConnector.prototype.shutdown = function () {
 	this.repl.close();
 	this.stdin.destroy();
+	// Allow anything that may be in progress to finish.
+	setTimeout(process.exit, 500);
 }
 
 ShellConnector.prototype.joinRoom = function (room) {

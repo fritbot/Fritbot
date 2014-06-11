@@ -1,53 +1,73 @@
-var fs = require('fs');
+var fs = require('fs'),
+    path = require('path');
 
 function ModuleLoader(bot) {
-	this.bot = bot;
-	this.loaded = [];
+    this.bot = bot;
+    this.loaded = [];
 
-    var modules = fs.readdirSync(this.bot.config.module_directory),
-    	name, module, package_json = undefined;
+    var local_dir = this.bot.config.module_directory || 'modules',
+        node_modules_dir = this.bot.config.node_directory || 'node_modules',
+        npm_modules = fs.readdirSync(node_modules_dir),
+        local_modules = fs.readdirSync(local_dir),
+        name, module, modules = [], package_json = undefined;
+
+    modules = npm_modules.concat(local_modules.map(function (x) {
+        return path.join(local_dir, x);
+    }))
+
+    console.log("Beginning module load...");
+
     for(var i = 0; i < modules.length; i++){
-        name = this.bot.config.module_directory+'/'+modules[i];
+        name = modules[i];
        
         try {
-        	module = require(name)
+            module = require(name)
         } catch (e) {
-        	console.log("Error importing module:", name);
-        	throw e;
+            console.log("Error importing module:", name, "\n", e, "\n--- Continuing without it.");
+            continue;
         }
 
         try {
-        	package_json = require(name + "/package.json");
+            package_json = require(path.join(name, "package.json"));
         } catch (e) {
-        	package_json = undefined;
-        	console.log("Error loading package.json for", name, ", ignoring")
+            package_json = undefined;
+            console.log("Error loading package.json for", name, ", ignoring this module.");
+            continue;
         }
         
         try {
-        	if (Object.prototype.toString.call( module ) === '[object Array]') {
-        		for (var ii = 0; ii < module.length; ii++) {
-        			this.loadModule(module[ii], package_json);
-        		}
-        	} else {
-        		this.loadModule(module, package_json);	
-        	}
+            this.loadModule(module, package_json);  
         } catch (e) {
-        	console.log("Error registering module:", name);
-        	throw e;
+            console.log("Error registering module:", name);
+            throw e;
         }
     }
+
+    console.log("Modules loaded successfully.")
 }
 
-ModuleLoader.prototype.loadModule = function (module, package_json) {
-	for(var prop in package_json) {
-		if(package_json.hasOwnProperty(prop) && !module.hasOwnProperty(prop)) {
-			module[prop] = package_json[prop]
-		}
-	}
+ModuleLoader.prototype.loadModule = function (module, package_json, parent) {
 
-	if (module.init) {
-		module.init(this.bot);
-	}
+    if (!module.description || !module.displayname) {
+        console.log(package_json.name, "doesn't look like a Fritbot module.");
+        return;
+    }
+
+    console.log("Loading module", package_json.name + '/' + module.displayname);
+
+    for(var prop in package_json) {
+        if(package_json.hasOwnProperty(prop) && !module.hasOwnProperty(prop)) {
+            module[prop] = package_json[prop]
+        }
+    }
+
+    if (parent) {
+        module.parent = parent;
+    }
+
+    if (module.init) {
+        module.init(this.bot);
+    }
 
     if (module.commands) {
         for (var i = 0; i < module.commands.length; i++) {
@@ -63,7 +83,18 @@ ModuleLoader.prototype.loadModule = function (module, package_json) {
         }
     }
 
-	this.loaded.push(module);
+    if (module.children) {
+        for (var i = 0; i < module.children.length; i++) {
+            try {
+                this.loadModule(module.children[i], package_json, module);
+            } catch (e) {
+                console.log("Error loading child module", i);
+                throw(e);
+            }
+        }
+    }
+
+    this.loaded.push(module);
     this.bot.events.emit('moduleLoaded', module)
 }
 

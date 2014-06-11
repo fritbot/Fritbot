@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "description": "Fritbot: The Angriest Bot",
   "dependencies": {
-    "fb-xmpp-connector": "",
     "js-yaml": "",
     "express": "",
     "errorhandler": "",
     "jade": "",
     "needle": "",
+    "request": "",
     "q": ""
   },
   "devDependencies": {},

@@ -3,7 +3,7 @@ function IntentService(bot) {
 	this.commands = [];
 	this.listeners = [];
 	this.prompts = bot.config.responds_to.map(function (name) {
-		return new RegExp("\@?" + name + "\:? ");
+		return new RegExp("^\@?" + name + "\:? ");
 	})
 
 	this.bot.events.on('sawMessage', this.handleMessage.bind(this));
@@ -43,6 +43,7 @@ IntentService.prototype.handleMessage = function (route, message) {
 		if (matched) {
 			isCommand = true;
 			message = message.slice(matched[0].length);
+			break;
 		}
 	}
 

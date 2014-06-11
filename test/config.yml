@@ -15,4 +15,9 @@ connector:
 web:
     port: 3000
 
+keepalive:
+    host: localhost:3000
+    interval: 6
+
 module_directory: ../../fb-modules
+node_directory: ../node_modules

@@ -1,4 +1,5 @@
 var events = require('events'),
+	request = require('request'),
 	Web = require('./web'),
 	ModuleLoader = require('./modules'),
 	IntentService = require('./intent'),
@@ -17,6 +18,15 @@ function Bot() {
 	this.history = new HistoryService(this);
 	this.intent = new IntentService(this);
 	this.modules = new ModuleLoader(this);
+
+	// start keepalive, if configured
+	if (this.config.keepalive) {
+		var url = "http://" + this.config.keepalive.host + "/health"
+		console.log("Keeping alove every", this.config.keepalive.interval, "seconds at", url);
+		setInterval(function () {
+				request.get(url, function(){});
+			}, this.config.keepalive.interval * 1000);
+	}
 
 	// Turn on the connector
 	this.connect();
@@ -42,7 +52,6 @@ Bot.prototype.send = function (route, message, delay) {
 	var deferred = Q.defer();
 
 	if (!delay) {
-		delay = 0
 		console.log("Sending '" + message + "' to", route)
 		this.events.emit('sendMessage', route, message, deferred);
 	} else {

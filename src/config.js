@@ -15,4 +15,8 @@ if (process.env.PORT) {
 	config.port = process.env.PORT;
 }
 
+if (config.keepalive && process.env.KEEPALIVE_HOST) {
+	config.keepalive.host = process.env.KEEPALIVE_HOST;
+}
+
 module.exports = config;
