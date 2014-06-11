@@ -12,7 +12,7 @@ try {
 
 // Detect if we are in Heroku, we need to use a different port
 if (process.env.PORT) {
-	config.port = process.env.PORT;
+	config.web.port = process.env.PORT;
 }
 
 if (config.keepalive && process.env.KEEPALIVE_HOST) {
