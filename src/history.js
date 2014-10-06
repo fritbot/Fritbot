@@ -5,7 +5,7 @@ function HistoryService(bot) {
 }
 
 HistoryService.prototype.handleMessage = function (route, message) {
-	console.log("Recieved Message:", route, message);
+	console.log("Recieved Message:", route.uid, message);
 }
 
 module.exports = HistoryService;

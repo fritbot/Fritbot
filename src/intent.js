@@ -98,7 +98,7 @@ IntentService.prototype.handleMessage = function (route, message) {
 	}
 
 	if (isCommand) {
-		this.bot.send(route, "Huh?");
+		route.send("Huh?");
 	}
 }
 

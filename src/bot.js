@@ -5,6 +5,7 @@ var events = require('events'),
 	IntentService = require('./intent'),
 	HistoryService = require('./history'),
 	config = require('./config'),
+	Route = require('./route'),
 	Q = require('q');
 
 function Bot() {
@@ -13,7 +14,7 @@ function Bot() {
 	// Setup event bus
 	this.events = new events.EventEmitter;
 
-	// Setup the functional bits
+	// Setup the functional sub-bits
 	this.web = new Web(this);
 	this.history = new HistoryService(this);
 	this.intent = new IntentService(this);
@@ -28,41 +29,26 @@ function Bot() {
 			}, this.config.keepalive.interval * 1000);
 	}
 
-	// Turn on the connector
-	this.connect();
+	// Turn on the connectors
+	this.connectors = {};
+
+	for (var i = 0; i < this.config.connectors.length; i++) {
+		var connector, module = this.config.connectors[i].module;
+		try {
+			// Create the connector, pass it some stuff it should know.
+			connector = new (require(module))(this, i, Route);
+		} catch (e) {
+			console.error("Error loading connector", module + '-' + i);
+			throw e;
+		}
+		this.connectors[connector.idx] = connector;
+	}
 
 	// Handle exits from wherever
 	process.on('exit', (function () {
 		this.shutdown();
 	}).bind(this));
 };
-
-Bot.prototype.connect = function () {
-	// Import the connector
-	try {
-		this.connector = new (require(this.config.connector.module))(this);
-	} catch (e) {
-		console.error("Error loading connector", this.config.connector.module);
-		throw e;
-	}
- }
-
-Bot.prototype.send = function (route, message, delay) {
-	// Wrap deferred & delay information so each connector does not need to define this.
-	var deferred = Q.defer();
-
-	if (!delay) {
-		console.log("Sending '" + message + "' to", route)
-		this.events.emit('sendMessage', route, message, deferred);
-	} else {
-		console.log("Sending (delay", delay, "s) '", message, "' to ", route)
-		setTimeout((function () {
-			this.events.emit('sendMessage', route, message, deferred);
-		}).bind(this), delay * 1000);
-	}
-
-	return deferred.promise;
-}
 
 Bot.prototype.shutdown = function () {
 	// Make sure we only shut down once.

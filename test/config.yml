@@ -1,9 +1,8 @@
 name: Fritbot
 responds_to: [fritbot, fb, bot]
 
-connector:
-    module: ./shell
-    # module: fb-xmpp-connector
+connectors:
+  - module: fb-xmpp-connector
     host: off-topic.xmpp.slack.com
     conference_host: conference.off-topic.xmpp.slack.com
     user: fritbot
@@ -13,11 +12,11 @@ connector:
     rooms: [bottest]
 
 web:
-    port: 3000
+  port: 3000
 
 keepalive:
-    host: localhost:3000
-    interval: 6
+  host: localhost:3000
+  interval: 6
 
 module_directory: ../../fb-modules
 node_directory: ../node_modules
