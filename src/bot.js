@@ -78,14 +78,16 @@ function Bot(config) {
 	}).bind(this));
 };
 
-Bot.prototype.shutdown = function () {
-	// Make sure we only shut down once.
-	if (this.shutting_down) { return; }
-	this.shutting_down = true;
+Bot.prototype = {
+	shutdown: function () {
+		// Make sure we only shut down once.
+		if (this.shutting_down) { return; }
+		this.shutting_down = true;
 
-	console.log("\nGoodbye cruel world...");
+		console.log("\nGoodbye cruel world...");
 
-	this.events.emit('shutdown');
+		this.events.emit('shutdown');
+	}
 }
 
 module.exports = Bot;

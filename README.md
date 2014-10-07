@@ -6,7 +6,7 @@ Synergizer. Life Embetterment. Efficent. Helpful. Curteous. These are words that
 Standard Installation
 ----
 
-Basic local setup: `npm install fritbot` then `require('fritbot').bot();` in a node REPL to check it out locally!
+Basic local setup: `npm install fritbot fb-core-modules && node -e "new (require('./index').bot)()"` to check it out locally!
 
 You'll want a much more advanced config than this, obviously. More information will come shortly.
 
