@@ -1,5 +1,10 @@
+// Route object
+// Represents a valid route to send a message:
+// Along a given connection to a user or to a room (and optionally to a specific user in a room)
+
 var Q = require('q');
 
+// All routes are on a given connector, but can be to a user, a room, or a room but directed at a specific user.
 function Route(connector, room, user) {
 	this.connector = connector;
 	this.room = room;
@@ -14,6 +19,8 @@ function Route(connector, room, user) {
 	}
 }
 
+// If this route was to a user in a room, remove the user and only send to the room.
+// Noop if the route was to a user, or a room with no user direction.
 Route.prototype.indirect = function() {
 	if (this.user & this.room) {
 		return new Route(this.connector, this.room);
@@ -22,6 +29,8 @@ Route.prototype.indirect = function() {
 	}
 };
 
+// If this route was to a user in a room, remove the room and directly to the user.
+// Noop if the route was to a user, or a room with no user direction.
 Route.prototype.direct = function() {
 	if (this.user & this.room) {
 		return new Route(this.connector, null, this.user);
@@ -30,6 +39,7 @@ Route.prototype.direct = function() {
 	}
 }
 
+// Send a message along this route. Optionally delay the send of the message by the given number of seconds.
 Route.prototype.send = function (message, delay) {
 	var deferred = Q.defer(),
 		msg = "Sending '" + message + "' to " + this.uid;

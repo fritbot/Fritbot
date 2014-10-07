@@ -4,6 +4,6 @@ module.exports = function(app) {
 	});
 
 	app.get('/health', function (req, res){
-		res.send("Now witness the firepower of this fully ARMED and OPERATIONAL battle station!")
+		res.send("Now witness the firepower of this fully ARMED and OPERATIONAL bot-tlestation!")
 	})
 }

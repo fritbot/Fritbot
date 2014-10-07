@@ -9,10 +9,9 @@
     "jade": "",
     "needle": "",
     "request": "",
-    "q": ""
-  },
-  "devDependencies": {
-    "grunt-push-release": ""
+    "q": "",
+    "underscore": "",
+    "dev-null": ""
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

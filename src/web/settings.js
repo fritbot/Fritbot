@@ -10,7 +10,7 @@ module.exports = function (app) {
 	app.use(express.static(__dirname + "/static/"));
 
 	// In case of 404, respond in the most appropriate way possible.
-	app.use(function(req, res, next){			
+	app.use(function(req, res, next){
 		if (req.accepts('html')) {
 			res.status(404);
 			res.render('404', { url: req.url });

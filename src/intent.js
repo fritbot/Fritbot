@@ -1,3 +1,6 @@
+// Intent Service
+// Handles all inbound message triggers
+
 function IntentService(bot) {
 	this.bot = bot;
 	this.commands = [];
@@ -6,9 +9,11 @@ function IntentService(bot) {
 		return new RegExp("^\@?" + name + "\:? ");
 	})
 
+	// Listen to all inbound events
 	this.bot.events.on('sawMessage', this.handleMessage.bind(this));
 }
 
+// Load an individual command. Bind it to the bot.
 IntentService.prototype.loadCommand = function (spec) {
 	this.commands.push({
 		'trigger': spec.trigger,
@@ -16,6 +21,7 @@ IntentService.prototype.loadCommand = function (spec) {
 	});
 }
 
+// Load an individual listener. Bind it to the bot.
 IntentService.prototype.loadListener = function (spec) {
 	this.listeners.push({
 		'trigger': spec.trigger,
@@ -23,6 +29,7 @@ IntentService.prototype.loadListener = function (spec) {
 	});
 }
 
+// Splits arguments along spaces, unless arg is in quotes.
 IntentService.prototype.splitArgs = function (message) {
 	var args = message.match(/(?:[^\s"]+|"[^"]*")+/g);
 	if (args) {
@@ -32,12 +39,14 @@ IntentService.prototype.splitArgs = function (message) {
 	}
 }
 
+// Handle a single inbound message along given route
 IntentService.prototype.handleMessage = function (route, message) {
 	var matches = [],
 		isCommand = (route.room == null), // All direct messages are interpreted as commands
 		i, matched;
 
-	// Is this a command? If so, remove the prompt.
+	// Commands in rooms are prefixed with the bot name (or alias)
+	// If so, remove the name to get just the command.
 	for (i = 0; i < this.prompts.length; i++) {
 		matched = message.match(this.prompts[i]);
 		if (matched) {
@@ -61,13 +70,17 @@ IntentService.prototype.handleMessage = function (route, message) {
 			matched = ['']
 
 			// Pick the match that matched the longest substring
+			// Semi-intelligently handles cases where multiple commands match
 			for (i = 0; i < matches.length; i++) {
 				if (matches[i][0].length > matched[0].length) {
 					matched = matches[i]
 				}
 			}
 
+			// Call the command and pass in arguments.
 			matched.func(route, this.splitArgs(message.slice(matched[0].length)))
+
+			// Do not execute any listeners if a command matched.
 			return;
 		}
 	}
@@ -83,20 +96,22 @@ IntentService.prototype.handleMessage = function (route, message) {
 		}
 	}
 
+	// Listeners are executed in order of match length
+	// Execution stops only if a listener returns true, otherwise the next longest listener is executed.
+	// This can result in multiple responses. In practice a listener should always return true if it makes a response.
 	if (matches.length) {
-		matched = ['']
+		matches.sort(function (a, b) {
+			return a[0].length > b[0].length;
+		});
 
-		// Pick the match that matched the longest substring
 		for (i = 0; i < matches.length; i++) {
-			if (matches[i][0].length > matched[0].length) {
-				matched = matches[i]
+			if (matches[i].func(route, message)) {
+				return;
 			}
 		}
-
-		matched.func(route, message)
-		return;
 	}
 
+	// If this was a command (prefixed by the bot name/alias) but we couldn't understand anything from it, express our confusion.
 	if (isCommand) {
 		route.send("Huh?");
 	}
