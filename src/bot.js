@@ -7,6 +7,7 @@ var events = require('events'),
 	HistoryService = require('./history'),
 	configLoader = require('./config'),
 	Route = require('./route'),
+	DatabaseConnection = require('./database');
 	Q = require('q');
 
 function Bot(config) {
@@ -32,6 +33,8 @@ function Bot(config) {
 	this.history = new HistoryService(this);
 	this.intent = new IntentService(this);
 	this.modules = new ModuleLoader(this);
+	this.db = new DatabaseConnection(this);
+	this.db.connect();
 
 	// Web bindings, if configured
 	if (this.config.web) {
@@ -48,29 +51,7 @@ function Bot(config) {
 		}
 	}
 
-	// Turn on the connectors
-	this.connectors = {};
-
-	if (this.config.connectors && this.config.connectors.length) {
-		// Load specified connectors
-		for (var i = 0; i < this.config.connectors.length; i++) {
-			var connector,
-				module = this.config.connectors[i].module,
-				modulePath = path.join(process.cwd(), this.config.node_directory, module);
-			try {
-				// Create the connector, pass it some stuff it should know.
-				connector = new (require(modulePath))(this, i, Route);
-			} catch (e) {
-				console.error("Error loading connector", module + '-' + i);
-				throw e;
-			}
-			this.connectors[connector.idx] = connector;
-		}
-	} else {
-		// No connectors specified - load the shell
-		connector = new (require('./shell'))(this, 0, Route);
-		this.connectors[connector.idx] = connector;
-	}
+	this.events.on('db_connected', this.initConnectors.bind(this));
 
 	// Handle exits from wherever
 	process.on('exit', (function () {
@@ -79,6 +60,7 @@ function Bot(config) {
 };
 
 Bot.prototype = {
+	// Signal shutdown to various modules (db, connectors, etc)
 	shutdown: function () {
 		// Make sure we only shut down once.
 		if (this.shutting_down) { return; }
@@ -87,6 +69,32 @@ Bot.prototype = {
 		console.log("\nGoodbye cruel world...");
 
 		this.events.emit('shutdown');
+	},
+
+	// Turn on the connectors (after the DB loads)
+	initConnectors: function () {
+		this.connectors = {};
+
+		if (this.config.connectors && this.config.connectors.length) {
+			// Load specified connectors
+			for (var i = 0; i < this.config.connectors.length; i++) {
+				var connector,
+					module = this.config.connectors[i].module,
+					modulePath = path.join(process.cwd(), this.config.node_directory, module);
+				try {
+					// Create the connector, pass it some stuff it should know.
+					connector = new (require(modulePath))(this, i, Route);
+				} catch (e) {
+					console.error("Error loading connector", module + '-' + i);
+					throw e;
+				}
+				this.connectors[connector.idx] = connector;
+			}
+		} else {
+			// No connectors specified - load the shell
+			connector = new (require('./shell'))(this, 0, Route);
+			this.connectors[connector.idx] = connector;
+		}
 	}
 }
 

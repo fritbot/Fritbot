@@ -8,6 +8,8 @@ function ModuleLoader(bot) {
     var npm_modules = [], local_modules = [],
         name, module, modules = [], package_json = undefined;
 
+    console.log("Reading module directories...")
+
     // Load modules in the ./node_modules directory
     try {
         npm_modules = fs.readdirSync(bot.config.node_directory).map(function (x) {

@@ -51,7 +51,7 @@ function ShellConnector(bot, index, Route) {
     self.repl.prompt();
 
     // Let the bot know we're good to go.
-    self.bot.events.emit('connected');
+    self.bot.events.emit('chat_connected', self);
 
 }
 
