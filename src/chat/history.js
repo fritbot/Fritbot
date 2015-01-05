@@ -1,5 +1,7 @@
 // History Service
-// TODO: This will eventually log all chat history to the database
+// Logs all inbound messages to the db & console.
+
+var Message = require('../schemas/message');
 
 function HistoryService(bot) {
 	this.bot = bot;
@@ -8,9 +10,16 @@ function HistoryService(bot) {
 	this.bot.events.on('sawMessage', this.handleMessage.bind(this));
 }
 
-// For now, simply output to the console log.
+// Yay a message!
 HistoryService.prototype.handleMessage = function (route, message) {
-	console.log("Recieved Message:", route.uid, message);
-}
+	console.log('Recieved Message:', route.uid, message);
+
+	Message.create({
+		text : message,
+		route : route.uid,
+		nickname : route.user,
+		room : route.room
+	});
+};
 
 module.exports = HistoryService;

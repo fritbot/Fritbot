@@ -11,7 +11,14 @@
     "request": "",
     "q": "",
     "underscore": "",
-    "mongodb": ""
+    "mongoose": "",
+    "mongodb-fs": ""
+  },
+  "devDependencies": {
+    "grunt": "",
+    "grunt-push-release": "",
+    "grunt-contrib-jshint": "",
+    "grunt-jscs": ""
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

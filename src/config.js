@@ -8,57 +8,57 @@ var yaml = require('js-yaml'),
 function ConfigurationLoader() {
 	// Internal defaults
 	this.config = {
-		name: 'Fritbot',
-		responds_to: ['fritbot', 'fb', 'bot'],
-		use_mock_db: true,
-		db_url: 'mongodb://localhost:27017/fritbot',
-		web: {
-			port: 3000,
-			bind_address: '0.0.0.0'
+		name : 'Fritbot',
+		responds_to : ['fritbot', 'fb', 'bot'],
+		use_mock_db : true,
+		db_url : 'mongodb://localhost:27017/fritbot',
+		web : {
+			port : 3000,
+			bind_address : '0.0.0.0'
 		},
-		keepalive: {
-		    host: 'localhost:3000',
-		    interval: 600
+		keepalive : {
+		    host : 'localhost:3000',
+		    interval : 600
 		},
-		node_directory: 'node_modules',
-		module_directory: 'modules'
+		node_directory : 'node_modules',
+		module_directory : 'modules'
 	};
 }
 
 ConfigurationLoader.prototype = {
 
 	// Read configuration object
-	loadConfig: function(newConfig) {
+	loadConfig : function (newConfig) {
 		if (newConfig) {
 			this.config = _.extend(this.config, newConfig);
 		}
 	},
 
 	// Load from config.yml
-	loadYml: function () {
+	loadYml : function () {
 		if (!fs.existsSync('./config.yml')) {
 			return;
 		}
 
-		console.log("Loading config.yml...");
+		console.log('Loading config.yml...');
 
-		var newConfig = {}
+		var newConfig = {};
 		try {
 		    newConfig = yaml.safeLoad(fs.readFileSync('./config.yml', 'utf8'));
 		} catch (e) {
-		    console.log("Error parsing config.yml data!");
+		    console.log('Error parsing config.yml data!');
 		    throw e;
 		}
-		this.config = _.extend(this.config, newConfig)
+		this.config = _.extend(this.config, newConfig);
 	},
 
 	// Load a value from the env to a given position in the config.
-	loadEnv: function (fromVar, toPath) {
+	loadEnv : function (fromVar, toPath) {
 		var path = toPath.split('.'),
 			pos = this.config;
 
 		// Walk the path, creating config object keys if neccesary.
-		for (node in path.slice(0, -1)) {
+		for (var node in path.slice(0, -1)) {
 			if (node in pos) {
 				pos = pos[node];
 			} else {
