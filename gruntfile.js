@@ -14,4 +14,6 @@ module.exports = function (grunt) {
             src : 'src/**/*.js'
         }
     });
+
+    grunt.registerTask('style', ['jshint', 'jscs']);
 };

@@ -4,8 +4,9 @@ var messageSchema = new mongoose.Schema({
 	text : String,
 	route : String,
 	nickname : String,
-	user_id : String,
+	user_id : mongoose.Schema.Types.ObjectId,
 	room : String,
+	outbound : Boolean,
 	date : { type : Date, default : Date.now }
 });
 

@@ -8,6 +8,7 @@ var events = require('events'),
 	configLoader = require('./config'),
 	Route = require('./chat/route'),
 	DatabaseConnection = require('./database'),
+	UserManager = require('./users'),
 	Q = require('q'); //jshint ignore:line
 
 function Bot(config) {
@@ -32,6 +33,7 @@ function Bot(config) {
 	// Setup the functional sub-bits
 	this.history = new HistoryService(this);
 	this.intent = new IntentService(this);
+	this.users = new UserManager(this);
 	this.modules = new ModuleLoader(this);
 	this.db = new DatabaseConnection(this);
 	this.db.connect();
