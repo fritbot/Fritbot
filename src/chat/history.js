@@ -19,20 +19,19 @@ HistoryService.prototype = {
 			console.log('Received Message:', route.uid, message);
 		}
 
-		var user;
-
-		if (route.user) {
-			user = this.bot.users.getUser(route.user);
-		}
-
-		Message.create({
+		var doc = {
 			text : message,
 			route : route.uid,
-			nickname : route.user,
 			room : route.room,
-			user_id : user,
 			outbound : isSelf
-		});
+		};
+
+		if (route.user) {
+			doc.user_id = route.user.id;
+			doc.nickname = route.user.nick;
+		}
+
+		Message.create(doc);
 	},
 
 	handleSentMessage : function (route, message) {

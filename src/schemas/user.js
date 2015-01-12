@@ -1,7 +1,8 @@
 var mongoose = require('mongoose');
 
 var userSchema = new mongoose.Schema({
-	uid : String
+	uid : String,
+	nick : String
 });
 
 var userModel = mongoose.model('user', userSchema);

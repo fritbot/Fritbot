@@ -136,7 +136,7 @@ ModuleLoader.prototype.loadModule = function (module, package_json, parent) {
             try {
                 this.loadModule(module.children[i], package_json, module);
             } catch (e) {
-                console.log('Error loading child module', i);
+                console.log('Error loading child module', module.children[i].displayname);
                 throw (e);
             }
         }

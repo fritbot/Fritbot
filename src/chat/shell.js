@@ -57,7 +57,7 @@ function ShellConnector(bot, index, Route) {
 
 // Sending a message consists of printing it to the shell
 ShellConnector.prototype.send = function (route, message, deferred) {
-    if (route.user) { message = '@' + route.user + ': ' + message; }
+    if (route.user) { message = '@' + route.user.nick + ': ' + message; }
     if (route.room) { message = route.room + ': ' + message; }
     console.log(message);
     this.repl.prompt();

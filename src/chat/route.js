@@ -5,17 +5,19 @@
 var Q = require('q');
 
 // All routes are on a given connector, but can be to a user, a room, or a room but directed at a specific user.
-function Route(connector, room, user) {
+function Route(connector, room, username, nick) {
 	this.connector = connector;
 	this.room = room;
-	this.user = user;
 
-	if (room && user) {
-		this.uid = connector.idx + '/' + room + ':' + user;
-	} else if (room) {
-		this.uid = connector.idx + '/' + room;
-	} else {
-		this.uid = connector.idx + ':' + user;
+	this.uid = connector.idx;
+
+	if (room) { this.uid += '/' + room; }
+	if (username) {
+		this.username = username;
+		this.nick = nick || username;
+		this.uid += ':' + username;
+		// Get or create user record
+		this.user = username && connector.bot.users.getOrCreateUser(this.uid, this.nick);
 	}
 }
 
@@ -32,7 +34,7 @@ Route.prototype.indirect = function () {
 // If this route was to a user in a room, remove the room and directly to the user.
 // Noop if the route was to a user, or a room with no user direction.
 Route.prototype.direct = function () {
-	if (this.user & this.room) {
+	if (this.user && this.room) {
 		return new Route(this.connector, null, this.user);
 	} else {
 		return this;

@@ -11,7 +11,7 @@
     "request": "",
     "q": "",
     "underscore": "",
-    "mongoose": "",
+    "mongoose": "~3.8",
     "mongodb-fs": ""
   },
   "devDependencies": {

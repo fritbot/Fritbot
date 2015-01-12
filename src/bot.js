@@ -30,13 +30,15 @@ function Bot(config) {
 	// Setup event bus
 	this.events = new events.EventEmitter();
 
+	// DB init must be before other bits
+	this.db = new DatabaseConnection(this);
+	this.db.connect();
+
 	// Setup the functional sub-bits
 	this.history = new HistoryService(this);
 	this.intent = new IntentService(this);
 	this.users = new UserManager(this);
 	this.modules = new ModuleLoader(this);
-	this.db = new DatabaseConnection(this);
-	this.db.connect();
 
 	// Web bindings, if configured
 	if (this.config.web) {

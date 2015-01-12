@@ -9,6 +9,8 @@ function MongoDBConnection(bot) {
 	self.bot = bot;
 	self.db = null;
 	self.mocked = false;
+	self.mongoose = mongoose; // expose mongoose to modules that may require it
+	self.schemas = require('./schemas'); // expose schemas to modules that may require it
 
 	// Cleanup db
 	self.bot.events.on('shutdown', function () {
