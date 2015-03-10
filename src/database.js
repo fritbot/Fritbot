@@ -10,6 +10,10 @@ function MongoDBConnection(bot) {
     self.mongoose = mongoose; // expose mongoose to modules that may require it
     self.schemas = require('./schemas'); // expose schemas to modules that may require it
 
+    if (bot.config.db_debug) {
+        mongoose.set('debug', true);
+    }
+
     // Cleanup db
     self.bot.events.on('shutdown', function () {
         if (self.db) {

@@ -1,5 +1,4 @@
-var bot = require('./src/bot.js');
-
 module.exports = {
-    bot : bot
+    bot : require('./src/bot.js'),
+    scriptbot : require('./src/scriptbot.js')
 };
