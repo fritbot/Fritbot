@@ -10,7 +10,6 @@ function ConfigurationLoader() {
     this.config = {
         name : 'Fritbot',
         responds_to : ['fritbot', 'fb', 'bot'],
-        use_mock_db : true,
         db_url : 'mongodb://localhost:27017/fritbot',
         web : {
             port : 3000,
