@@ -24,7 +24,7 @@ function Route(connector, room, username, nick) {
 // If this route was to a user in a room, remove the user and only send to the room.
 // Noop if the route was to a user, or a room with no user direction.
 Route.prototype.indirect = function () {
-    if (this.user & this.room) {
+    if (this.user && this.room) {
         return new Route(this.connector, this.room);
     } else {
         return this;
