@@ -1,3 +1,3 @@
 module.exports = {
-	message : require('./message')
+    message : require('./message')
 };
