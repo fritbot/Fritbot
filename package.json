@@ -10,7 +10,7 @@
     "needle": "",
     "request": "",
     "q": "",
-    "underscore": "",
+    "lodash": "",
     "mongoose": "~3.8"
   },
   "devDependencies": {

@@ -3,7 +3,7 @@
 
 var yaml = require('js-yaml'),
     fs = require('fs'),
-    _ = require('underscore');
+    _ = require('lodash');
 
 function ConfigurationLoader() {
     // Internal defaults
@@ -29,7 +29,7 @@ ConfigurationLoader.prototype = {
     // Read configuration object
     loadConfig : function (newConfig) {
         if (newConfig) {
-            this.config = _.extend(this.config, newConfig);
+            this.config = _.merge(this.config, newConfig);
         }
     },
 
@@ -48,7 +48,7 @@ ConfigurationLoader.prototype = {
             console.log('Error parsing config.yml data!');
             throw e;
         }
-        this.config = _.extend(this.config, newConfig);
+        this.config = _.merge(this.config, newConfig);
     },
 
     // Load a value from the env to a given position in the config.
