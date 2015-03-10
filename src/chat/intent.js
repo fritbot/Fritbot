@@ -35,7 +35,11 @@ IntentService.prototype.splitArgs = function (message) {
 	if (args) {
 		return args;
 	} else {
-		return [message];
+		if (message === '') {
+			return [];
+		} else {
+			return [message];
+		}
 	}
 };
 
