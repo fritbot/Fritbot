@@ -1,6 +1,6 @@
 {
   "name": "fritbot",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Fritbot: The Angriest Bot",
   "dependencies": {
     "js-yaml": "",
