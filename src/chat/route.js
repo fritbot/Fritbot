@@ -16,8 +16,9 @@ function Route(connector, room, username, nick) {
         this.username = username;
         this.nick = nick || username;
         this.uid += ':' + username;
+        this.user_uid = connector.idx + ':' + username;
         // Get or create user record
-        this.user = username && connector.bot.users.getOrCreateUser(this.uid, this.nick);
+        this.user = username && connector.bot.users.getOrCreateUser(this.user_uid, this.nick);
     }
 }
 
@@ -35,7 +36,7 @@ Route.prototype.indirect = function () {
 // Noop if the route was to a user, or a room with no user direction.
 Route.prototype.direct = function () {
     if (this.user && this.room) {
-        return new Route(this.connector, null, this.user);
+        return new Route(this.connector, null, this.username, this.nick);
     } else {
         return this;
     }

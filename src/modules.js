@@ -110,7 +110,7 @@ ModuleLoader.prototype.loadModule = function (module, package_json, parent) {
 
     // If the module requires initialization, do so.
     if (module.init) {
-        module.init(this.bot);
+        module.init(this.bot, this);
     }
 
     var i;
