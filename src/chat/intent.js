@@ -1,6 +1,8 @@
 // Intent Service
 // Handles all inbound message triggers
 
+var _ = require('lodash');
+
 function IntentService(bot) {
     this.bot = bot;
     this.commands = [];
@@ -33,7 +35,8 @@ IntentService.prototype.loadListener = function (spec) {
 IntentService.prototype.splitArgs = function (message) {
     var args = message.match(/(?:[^\s"]+|"[^"]*")+/g);
     if (args) {
-        return args;
+        // Strip quotes from the string
+        return _.map(args, function (arg) { return arg.replace(/"/g, ''); } );
     } else {
         if (message === '') {
             return [];
@@ -101,8 +104,8 @@ IntentService.prototype.handleMessage = function (route, message) {
     }
 
     // Listeners are executed in order of match length
-    // Execution stops only if a listener returns true, otherwise the next longest listener is executed.
-    // This can result in multiple responses. In practice a listener should always return true if it makes a response.
+    // Execution stops if a listener returns true, otherwise the next longest listener is executed. This can result in multiple responses.
+    // In practice a synchronous listeners should always return true if they respond, and listeners with async (for example, db calls) return false.
     if (matches.length) {
         matches.sort(function (a, b) {
             return a[0].length > b[0].length;
