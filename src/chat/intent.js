@@ -33,10 +33,10 @@ IntentService.prototype.loadListener = function (spec) {
 
 // Splits arguments along spaces, unless arg is in quotes.
 IntentService.prototype.splitArgs = function (message) {
-    var args = message.match(/(?:[^\s"]+|"[^"]*")+/g);
+    var args = message.match(/[^\s"']+|"([^"]*)"|'([^']*)'/g);
     if (args) {
         // Strip quotes from the string
-        return _.map(args, function (arg) { return arg.replace(/"/g, ''); } );
+        return _.map(args, function (arg) { return _.trim(_.trim(arg, '\''), '"'); } );
     } else {
         if (message === '') {
             return [];
