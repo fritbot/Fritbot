@@ -1,7 +1,5 @@
 var events = require('events'),
-    request = require('request'),
     path = require('path'),
-    Web = require('./web'),
     ModuleLoader = require('./modules'),
     IntentService = require('./chat/intent'),
     HistoryService = require('./chat/history'),
@@ -12,16 +10,14 @@ var events = require('events'),
     Q = require('q'); //jshint ignore:line
 
 function Bot(config) {
+    // Determine version
+    this.version = require('../package.json').version;
+
     // Load hardcoded configuration
     configLoader.loadConfig(config);
 
     // Load yaml files
     configLoader.loadYml();
-
-    // Load Heroku-required values
-    configLoader.loadEnv('PORT', 'web.port');
-    configLoader.loadEnv('KEEPALIVE_HOST', 'keepalive.host');
-    configLoader.loadEnv('BIND_ADDRESS', 'web.bind_address');
 
     // Store references for modules to use
     this.config = configLoader.config;
@@ -39,21 +35,6 @@ function Bot(config) {
     this.intent = new IntentService(this);
     this.users = new UserManager(this);
     this.modules = new ModuleLoader(this);
-
-    // Web bindings, if configured
-    if (this.config.web) {
-        this.web = new Web(this);
-
-        // Start keepalive, if configured - typically used for offerings like Heroku
-        // Only available if web server is turned on as well.
-        if (this.config.keepalive) {
-            var url = 'http://' + this.config.keepalive.host + '/health';
-            console.log('Keeping alive every', this.config.keepalive.interval, 'seconds at', url);
-            setInterval(function () {
-                    request.get(url, function () {});
-                }, this.config.keepalive.interval * 1000);
-        }
-    }
 
     this.events.on('db_connected', this.initConnectors.bind(this));
 

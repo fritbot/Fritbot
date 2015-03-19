@@ -4,11 +4,6 @@
   "description": "Fritbot: The Angriest Bot",
   "dependencies": {
     "js-yaml": "",
-    "express": "",
-    "errorhandler": "",
-    "jade": "",
-    "needle": "",
-    "request": "",
     "q": "",
     "lodash": "",
     "mongoose-q": "",
