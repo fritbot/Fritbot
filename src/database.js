@@ -1,6 +1,6 @@
 // Database Wrapper for Mongo
 
-var mongoose = require('mongoose');
+var mongoose = require('mongoose-q')();
 
 // Handle connection to MongoDB
 function MongoDBConnection(bot) {

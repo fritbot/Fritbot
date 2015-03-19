@@ -11,7 +11,7 @@
     "request": "",
     "q": "",
     "lodash": "",
-    "mongoose": "~3.8"
+    "mongoose-q": ""
   },
   "devDependencies": {
     "grunt": "",

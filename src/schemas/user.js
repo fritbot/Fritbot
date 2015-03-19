@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose-q')();
 
 var userSchema = new mongoose.Schema({
     uid : String,

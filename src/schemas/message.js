@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose-q')();
 
 var messageSchema = new mongoose.Schema({
     text : String,
