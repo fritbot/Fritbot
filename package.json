@@ -11,7 +11,8 @@
     "request": "",
     "q": "",
     "lodash": "",
-    "mongoose-q": ""
+    "mongoose-q": "",
+    "moment": ""
   },
   "devDependencies": {
     "grunt": "",

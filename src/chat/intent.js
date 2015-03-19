@@ -2,6 +2,9 @@
 // Handles all inbound message triggers
 
 var _ = require('lodash');
+var moment = require('moment');
+
+var squelch = [];
 
 function IntentService(bot) {
     this.bot = bot;
@@ -19,6 +22,7 @@ function IntentService(bot) {
 IntentService.prototype.loadCommand = function (spec) {
     this.commands.push({
         trigger : spec.trigger,
+        core : spec.core,
         func : spec.func.bind(this.bot)
     });
 };
@@ -46,6 +50,29 @@ IntentService.prototype.splitArgs = function (message) {
     }
 };
 
+IntentService.prototype.squelch = function (room, squelched) {
+    if (typeof squelched === 'undefined') {
+        squelched = true;
+    }
+
+    var time = moment();
+
+    if (squelched) {
+        time.add(10, 'minute');
+    }
+    squelch[room] = time;
+    console.log('Squelched in', room, 'until', time.format('h:mm:ss'));
+};
+
+IntentService.prototype.squelched = function (room) {
+    if (room && squelch[room]) {
+        var delta = moment().diff(squelch[room]);
+        return delta < 0;
+    } else {
+        return false;
+    }
+};
+
 // Handle a single inbound message along given route
 IntentService.prototype.handleMessage = function (route, message) {
     var matches = [],
@@ -66,10 +93,17 @@ IntentService.prototype.handleMessage = function (route, message) {
     if (isCommand) {
         // Find all matches
         for (i = 0; i < this.commands.length; i++) {
-            matched = this.commands[i].trigger.exec(message);
+            var command = this.commands[i];
+
+            matched = command.trigger.exec(message);
             if (matched && matched.index === 0) {
-                matched.func = this.commands[i].func;
-                matches.push(matched);
+                // Do not process non-core commands if currently squelched
+                if (command.core || !this.squelched(route.room)) {
+                    matched.func = command.func;
+                    matches.push(matched);
+                } else {
+                    console.log('Bot is squelched, not processing command');
+                }
             }
         }
 
@@ -92,35 +126,42 @@ IntentService.prototype.handleMessage = function (route, message) {
         }
     }
 
-    // Check for listener matches
-    matches = [];
-    for (i = 0; i < this.listeners.length; i++) {
-        matched = this.listeners[i].trigger.exec(message);
+    // Do not process listener if currently shut up.
+    if (!this.squelched(route.room)) {
+        // Check for listener matches
+        matches = [];
+        for (i = 0; i < this.listeners.length; i++) {
+            matched = this.listeners[i].trigger.exec(message);
 
-        if (matched) {
-            matched.func = this.listeners[i].func;
-            matches.push(matched);
+            if (matched) {
+                matched.func = this.listeners[i].func;
+                matches.push(matched);
+            }
         }
-    }
 
-    // Listeners are executed in order of match length
-    // Execution stops if a listener returns true, otherwise the next longest listener is executed. This can result in multiple responses.
-    // In practice a synchronous listeners should always return true if they respond, and listeners with async (for example, db calls) return false.
-    if (matches.length) {
-        matches.sort(function (a, b) {
-            return a[0].length > b[0].length;
-        });
+        // Listeners are executed in order of match length
+        // Execution stops if a listener returns true, otherwise the next longest listener is executed. This can result in multiple responses.
+        // In practice a synchronous listeners should always return true if they respond, and listeners with async (for example, db calls) return false.
+        if (matches.length) {
+            matches.sort(function (a, b) {
+                return a[0].length > b[0].length;
+            });
 
-        for (i = 0; i < matches.length; i++) {
-            if (matches[i].func(route, message)) {
-                return;
+            for (i = 0; i < matches.length; i++) {
+                if (matches[i].func(route, message)) {
+                    return;
+                }
             }
         }
     }
 
     // If this was a command (prefixed by the bot name/alias) but we couldn't understand anything from it, express our confusion.
     if (isCommand) {
-        route.send('Huh?');
+        if (this.squelched(route.room)) {
+            route.direct().send("I'm currently shut up in " + route.room + ", use 'come back' to get me back.");
+        } else {
+            route.send('Huh?');
+        }
     }
 };
 

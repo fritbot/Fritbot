@@ -59,7 +59,6 @@ UserManager.prototype = {
     },
 
     userEntersRoom : function (route) {
-        console.log(route.user.nick, 'enters', route.room);
         if (!room_roster[route.room]) {
             room_roster[route.room] = [route.user];
         } else if (!_.includes(room_roster[route.room])) {
@@ -68,7 +67,6 @@ UserManager.prototype = {
     },
 
     userLeavesRoom : function (route) {
-        console.log(route.user.nick, 'leaves', route.room);
         if (room_roster[route.room]) {
             _.remove(room_roster[route.room], function (user) {
                 return route.user.uid === user.uid;
