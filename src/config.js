@@ -38,10 +38,15 @@ ConfigurationLoader.prototype = {
     },
 
     // Ensure a config value exists, setting to default if not
+    // Will attempt to pull the key from the env if possible
     // If fallback is a list, number, or boolean, this will attempt to coerce any existing value to the same.
     // Specify false as the description to prevent it from displaying.
     // Optionally set description of value
     ensure : function (key, fallback, description) {
+        if (process.env[key.toUpperCase()]) {
+            this.config[key] = process.env[key.toUpperCase()];
+        }
+
         if (typeof this.config[key] === 'undefined') {
             if (typeof fallback === 'undefined' || fallback === null) {
                 throw new Error('Needed to ensure config key ' + key + ' but it was not set.');
