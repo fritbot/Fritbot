@@ -3,12 +3,11 @@
 
 var readline = require('readline');
 
-function ShellConnector(bot, index, Route) {
+function ShellConnector(bot, Route) {
     var self = this;
     self.bot = bot;
     self.config = bot.config.connector;
     self.Route = Route;
-    self.idx = 'shell-' + index;
 
     console.log('\n----\nWelcome to the wonderful world of Fritbot!\n' +
                 'Commands you type here will be interpreted as a direct message to Fritbot.\n' +
