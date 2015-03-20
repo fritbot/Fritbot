@@ -10,6 +10,10 @@ function MongoDBConnection(bot) {
     self.mongoose = mongoose; // expose mongoose to modules that may require it
     self.schemas = require('./schemas'); // expose schemas to modules that may require it
 
+    bot.configLoader.ensure('db_debug', false, 'Emit debug information about the database to logs');
+    bot.configLoader.ensure('db_url', 'mongodb://localhost:27017/fritbot', 'Mongo Database URL');
+
+
     if (bot.config.db_debug) {
         mongoose.set('debug', true);
     }

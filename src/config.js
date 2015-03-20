@@ -6,22 +6,8 @@ var yaml = require('js-yaml'),
     _ = require('lodash');
 
 function ConfigurationLoader() {
-    // Internal defaults
-    this.config = {
-        name : 'Fritbot',
-        responds_to : ['fritbot', 'fb', 'bot'],
-        db_url : 'mongodb://localhost:27017/fritbot',
-        web : {
-            port : 3000,
-            bind_address : '0.0.0.0'
-        },
-        keepalive : {
-            host : 'localhost:3000',
-            interval : 600
-        },
-        node_directory : 'node_modules',
-        module_directory : 'modules'
-    };
+    this.config = {};
+    this.descriptions = {};
 }
 
 ConfigurationLoader.prototype = {
@@ -51,21 +37,34 @@ ConfigurationLoader.prototype = {
         this.config = _.merge(this.config, newConfig);
     },
 
-    // Load a value from the env to a given position in the config.
-    loadEnv : function (fromVar, toPath) {
-        var path = toPath.split('.'),
-            pos = this.config;
-
-        // Walk the path, creating config object keys if neccesary.
-        for (var node in path.slice(0, -1)) {
-            if (node in pos) {
-                pos = pos[node];
+    // Ensure a config value exists, setting to default if not
+    // If fallback is a list, number, or boolean, this will attempt to coerce any existing value to the same.
+    // Specify false as the description to prevent it from displaying.
+    // Optionally set description of value
+    ensure : function (key, fallback, description) {
+        if (typeof this.config[key] === 'undefined') {
+            if (typeof fallback === 'undefined' || fallback === null) {
+                throw new Error('Needed to ensure config key ' + key + ' but it was not set.');
             } else {
-                pos[node] = {};
-                pos = pos[node];
+                this.config[key] = fallback;
             }
         }
-        pos[path.slice(-1)] = process.env[fromVar];
+
+        // Coerce to appropriate type
+        if (typeof this.config[key] === 'string') {
+            if (_.isArray(fallback)) {
+                this.config[key] = _.trimLeft(_.trimRight(this.config[key], ']'), '[').split(/[, ]+/);
+            } else if (typeof fallback === 'number') {
+                this.config[key] = +this.config[key];
+            } else if (typeof fallback === 'boolean') {
+                this.config[key] = this.config[key] === 'true';
+            }
+        }
+
+        // Log description of config value
+        if (typeof description !== 'undefined') {
+            this.descriptions[key] = description;
+        }
     }
 };
 

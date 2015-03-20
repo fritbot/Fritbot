@@ -9,16 +9,15 @@ function Route(connector, room, username, nick) {
     this.connector = connector;
     this.room = room;
 
-    this.uid = connector.idx;
+    this.uid = '';
 
-    if (room) { this.uid += '/' + room; }
+    if (room) { this.uid += room; }
     if (username) {
         this.username = username;
         this.nick = nick || username;
-        this.uid += ':' + username;
-        this.user_uid = connector.idx + ':' + username;
+        this.uid += '/' + username;
         // Get or create user record
-        this.user = username && connector.bot.users.getOrCreateUser(this.user_uid, this.nick);
+        this.user = connector.bot.users.getOrCreateUser(this.username, this.nick);
     }
 }
 

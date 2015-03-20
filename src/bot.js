@@ -19,6 +19,13 @@ function Bot(config) {
     // Load yaml files
     configLoader.loadYml();
 
+    // Defaults
+    configLoader.ensure('name', 'Fritbot', 'Name of the bot');
+    configLoader.ensure('responds_to', ['fritbot', 'fb', 'bot'], 'Responds to commands directed at these');
+    configLoader.ensure('node_directory', 'node_modules', null, true);
+    configLoader.ensure('modules', 'modules', null, true);
+    configLoader.ensure('connector', null, null, true);
+
     // Store references for modules to use
     this.config = configLoader.config;
     this.configLoader = configLoader;
@@ -61,24 +68,21 @@ Bot.prototype = {
         var connector;
         this.connectors = {};
 
-        if (this.config.connectors && this.config.connectors.length) {
-            // Load specified connectors
-            for (var i = 0; i < this.config.connectors.length; i++) {
-                var module = this.config.connectors[i].module,
-                    modulePath = path.join(process.cwd(), this.config.node_directory, module);
-                try {
-                    // Create the connector, pass it some stuff it should know.
-                    connector = new (require(modulePath))(this, i, Route);
-                } catch (e) {
-                    console.error('Error loading connector', module + '-' + i);
-                    throw e;
-                }
-                this.connectors[connector.idx] = connector;
+        if (this.config.connector) {
+            var module = this.config.connector,
+                modulePath = path.join(process.cwd(), this.config.node_directory, module);
+            try {
+                // Create the connector, pass it some stuff it should know.
+                connector = new (require(modulePath))(this, Route);
+            } catch (e) {
+                console.error('Error loading connector', module);
+                throw e;
             }
+            this.connector = connector;
         } else {
             // No connectors specified - load the shell
-            connector = new (require('./chat/shell'))(this, 0, Route);
-            this.connectors[connector.idx] = connector;
+            connector = new (require('./chat/shell'))(this, Route);
+            this.connector = connector;
         }
     }
 };
