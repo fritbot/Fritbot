@@ -83,6 +83,7 @@ function ModuleLoader(bot) {
     }
 
     console.log('Modules loaded successfully.');
+    this.bot.events.emit('modulesLoaded');
 }
 
 ModuleLoader.prototype.loadModule = function (module, package_json, parent) {
@@ -106,6 +107,7 @@ ModuleLoader.prototype.loadModule = function (module, package_json, parent) {
     // Set module parents for sub-modules
     if (parent) {
         module.parent = parent;
+        module.name = package_json.name + '/' + module.displayname;
     }
 
     // If the module requires initialization, do so.
