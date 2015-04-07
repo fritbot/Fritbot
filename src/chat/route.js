@@ -2,7 +2,8 @@
 // Represents a valid route to send a message:
 // Along a given connection to a user or to a room (and optionally to a specific user in a room)
 
-var Q = require('q');
+var Q = require('q'),
+    _ = require('lodash');
 
 // All routes are on a given connector, but can be to a user, a room, or a room but directed at a specific user.
 function Route(connector, room, username, nick) {
@@ -41,19 +42,20 @@ Route.prototype.direct = function () {
     }
 };
 
-// Send a message along this route. Optionally delay the send of the message by the given number of seconds.
-Route.prototype.send = function (message, delay) {
-    var deferred = Q.defer(),
-        msg = 'Sending "' + message + '" to ' + this.uid;
-    if (!delay) {
-        console.log(msg);
-        this.connector.send(this, message, deferred);
-    } else {
-        console.log(msg, '(delayed', delay, 'seconds)');
-        setTimeout((function () {
-            this.connector.send(this, message, deferred);
-        }).bind(this), delay * 1000);
+// Send a message along this route.
+Route.prototype.send = function (message) {
+    var deferred = Q.defer();
+
+    if (message[0] === '?') {
+        var args = _.drop(arguments),
+            key = message.slice(1),
+            locale = this.connector.bot.config.locale;
+
+        message = this.connector.bot.i18n.doTemplate(locale, key, args);
     }
+
+    console.log('Sending "' + message + '" to ' + this.uid);
+    this.connector.send(this, message, deferred);
     return deferred.promise;
 };
 

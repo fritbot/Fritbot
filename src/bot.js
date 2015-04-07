@@ -1,5 +1,6 @@
 var events = require('events'),
     path = require('path'),
+    I18nService = require('./i18n'),
     ModuleLoader = require('./modules'),
     IntentService = require('./chat/intent'),
     HistoryService = require('./chat/history'),
@@ -13,24 +14,30 @@ function Bot(config) {
     // Determine version
     this.version = require('../package.json').version;
 
-    // Load hardcoded configuration
-    configLoader.loadConfig(config);
-
     // Load yaml files
     configLoader.loadYml();
+
+    // Load dynamic configuration
+    configLoader.loadConfig(config);
+
 
     // Defaults
     configLoader.ensure('name', 'Fritbot', 'Name of the bot');
     configLoader.ensure('responds_to', ['fritbot', 'fb', 'bot'], 'Responds to commands directed at these');
+    configLoader.ensure('locale', 'en', 'Default locale language to use');
     configLoader.ensure('node_directory', 'node_modules', null, true);
     configLoader.ensure('module_directory', 'modules', null, true);
+
+    // Setup event bus
+    this.events = new events.EventEmitter();
 
     // Store references for modules to use
     this.config = configLoader.config;
     this.configLoader = configLoader;
 
-    // Setup event bus
-    this.events = new events.EventEmitter();
+    // Load lang files
+    this.i18n = new I18nService(this);
+    this.i18n.loadLangFiles(path.join(__dirname, '..', 'lang'));
 
     // DB init must be before other bits
     this.db = new DatabaseConnection(this);
@@ -79,7 +86,7 @@ Bot.prototype = {
             }
             this.connector = connector;
         } else {
-            // No connectors specified - load the shell
+            // No connector specified - load the shell
             connector = new (require('./chat/shell'))(this, Route);
             this.connector = connector;
         }

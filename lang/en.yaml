@@ -1,0 +1,2 @@
+command_not_found: ["Huh?", "What?", "Eh?"]
+command_but_silenced: "I'm currently silenced in %s, use 'come back' to get me back."

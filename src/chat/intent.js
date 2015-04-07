@@ -4,12 +4,11 @@
 var _ = require('lodash');
 var moment = require('moment');
 
-var squelch = [];
-
 function IntentService(bot) {
     this.bot = bot;
     this.commands = [];
     this.listeners = [];
+    this.squelch_timers = [];
     this.prompts = bot.config.responds_to.map(function (name) {
         return new RegExp('^\@?' + name + '\:? ');
     });
@@ -60,13 +59,13 @@ IntentService.prototype.squelch = function (room, squelched) {
     if (squelched) {
         time.add(10, 'minute');
     }
-    squelch[room] = time;
+    this.squelch_timers[room] = time;
     console.log('Squelched in', room, 'until', time.format('h:mm:ss'));
 };
 
 IntentService.prototype.squelched = function (room) {
-    if (room && squelch[room]) {
-        var delta = moment().diff(squelch[room]);
+    if (room && this.squelch_timers[room]) {
+        var delta = moment().diff(this.squelch_timers[room]);
         return delta < 0;
     } else {
         return false;
@@ -158,9 +157,9 @@ IntentService.prototype.handleMessage = function (route, message) {
     // If this was a command (prefixed by the bot name/alias) but we couldn't understand anything from it, express our confusion.
     if (isCommand) {
         if (this.squelched(route.room)) {
-            route.direct().send("I'm currently shut up in " + route.room + ", use 'come back' to get me back.");
+            route.direct().send('?command_but_silenced', route.room);
         } else {
-            route.send('Huh?');
+            route.send('?command_not_found');
         }
     }
 };

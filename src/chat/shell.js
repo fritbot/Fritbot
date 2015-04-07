@@ -11,7 +11,8 @@ function ShellConnector(bot, Route) {
 
     console.log('\n----\nWelcome to the wonderful world of Fritbot!\n' +
                 'Commands you type here will be interpreted as a direct message to Fritbot.\n' +
-                'To send a message as if it were from a room, type "roomname> your message"');
+                'To send a message as if it were from a room, type "roomname> your message"\n' +
+                'Press ctrl-c to kill Fritbot.');
 
     this.stdin = process.openStdin();
     this.stdout = process.stdout;
@@ -43,7 +44,6 @@ function ShellConnector(bot, Route) {
 
     // Handle events
     self.bot.events.on('shutdown', self.shutdown.bind(this));
-    self.bot.events.on('sendMessage', self.send.bind(this));
 
     // User prompt
     self.repl.setPrompt(self.bot.config.name + '> ');

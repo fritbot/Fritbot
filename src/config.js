@@ -43,8 +43,11 @@ ConfigurationLoader.prototype = {
     // Specify false as the description to prevent it from displaying.
     // Optionally set description of value
     ensure : function (key, fallback, description) {
-        if (process.env[key.toUpperCase()]) {
-            this.config[key] = process.env[key.toUpperCase()];
+
+        // Attempt to read from env
+        var env_key = 'FB_' + key.toUpperCase();
+        if (process.env[env_key]) {
+            this.config[key] = process.env[key.toUpperCase(env_key)];
         }
 
         if (typeof this.config[key] === 'undefined') {

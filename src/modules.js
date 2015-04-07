@@ -25,7 +25,7 @@ function ModuleLoader(bot) {
             return path.join(process.cwd(), bot.config.module_directory, x); // Need to map on full path to modules.
         });
     } catch (e) {
-        console.log('Error reading modules dir', bot.config.module_directory, '\n', e, '\nWon\'t be loading modules from there.');
+        console.log('No local modules dir', bot.config.module_directory, '\nThis is fine (unless you thought you created it...)');
     }
 
     // Concatenate full list of modules to load.
@@ -35,6 +35,11 @@ function ModuleLoader(bot) {
 
     for (var i = 0; i < modules.length; i++) {
         name = modules[i];
+
+        // Skip if it's a hidden folder
+        if (path.basename(name)[0] === '.') {
+            continue;
+        }
 
         // Load the package metadata. Exclude modules that do not have a package.
         try {
@@ -75,7 +80,7 @@ function ModuleLoader(bot) {
 
         // Assuming require worked OK, now actually load the module into Fritbot.
         try {
-            this.loadModule(module, package_json);
+            this.loadModule(module, package_json, null, name);
         } catch (e) {
             console.log('Error registering module:', name);
             throw e;
@@ -86,7 +91,7 @@ function ModuleLoader(bot) {
     this.bot.events.emit('modulesLoaded');
 }
 
-ModuleLoader.prototype.loadModule = function (module, package_json, parent) {
+ModuleLoader.prototype.loadModule = function (module, package_json, parent, pathname) {
 
     // Minimum required information for a module is the display name.
     if (!module.displayname) {
@@ -146,7 +151,7 @@ ModuleLoader.prototype.loadModule = function (module, package_json, parent) {
 
     // Add the module to the loaded set and emit event
     this.loaded.push(module);
-    this.bot.events.emit('moduleLoaded', module);
+    this.bot.events.emit('moduleLoaded', module, pathname);
 };
 
 module.exports = ModuleLoader;
