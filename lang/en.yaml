@@ -1,2 +1,7 @@
 command_not_found: ["Huh?", "What?", "Eh?"]
 command_but_silenced: "I'm currently silenced in %s, use 'come back' to get me back."
+generic_error: There was an error processing your message. Perhaps it's time to check the log?
+response_error: |+
+  There was an error:
+  %s
+translation_error: '%s was lost in translation. Check the logs.'

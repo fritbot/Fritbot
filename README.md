@@ -3,14 +3,14 @@ Fritbot - The Angriest Bot
 
 Synergizer. Life Embetterment. Efficent. Helpful. Curteous. These are words that may be used to describe other popular chat robots. Not Fritbot.
 
-Test Him Out!
+Testing Setup
 ----
 
 In order to run Fritbot, you will need a [Mongo server](https://www.mongodb.org/downloads) running. This test section assumes you have it installed and running locally. For other implementations, see Advanced Setup.
 
-Once you have the mongo server started, run `npm install fritbot fb-core-modules && node -e "new (require('fritbot').bot)()"` to check Fritbot out locally! Try 'say hi' or 'google fritbot', or 'help' for a full list of available functions. Want to try out [other modules](https://www.npmjs.com/browse/keyword/fritbot-module)? Install them with npm normally, then run `node -e "new (require('fritbot').bot)()"` again. No setup is required for many modules!
+Once you have the mongo server started, run `npm install fritbot fb-core-modules fb-pkg-funbox && node -e "new (require('fritbot').bot)()"` to check Fritbot out locally! This method includes both the core modules and the [Funbox](https://github.com/Urthen/fb-pkg-funbox), so play around. Try 'say hi', 'stock fb', 'google fritbot', or 'help' for a full list of available functions. Want to try out [other modules](https://www.npmjs.com/browse/keyword/fritbot-module)? Install them with npm normally, then run `node -e "new (require('fritbot').bot)()"` again. No setup is required for many modules!
 
-Under normal circumstances, of course, you'll want much more than this. The above code will run Fritbot in a shell, allowing you to test communication with the bot directly, but that isn't nearly as fun. For information setting up a full fledged Fritbot instance, configuring connectors, and deploying to services such as Heroku, see the next section.
+Under normal circumstances, of course, you'll want much more than this. The above code will run Fritbot in a shell, allowing you to test communication with the bot directly, but that isn't nearly as fun. For information setting up a full fledged Fritbot instance, configuring connectors, and deploying to services such as Heroku, see the next sections.
 
 But remember: never feed him after midnight.
 
@@ -27,10 +27,16 @@ Make sure you specify which rooms your bot should join! We highly recommend you 
 
 Once you've set up the connector and any modules you would like, run the bot with `node index.js`. If everything works correctly, your bot should now connect to your server instead of opening a shell. Most common errors are reported sanely so you should hopefully be able to resolve any problems on your own.
 
-Core Configuration
+Bot Configuration
 ---
 
-Most connectors and modules set up their own configuration variables, which can be found in the appropriate repositories. Some variables are part of the bot itself, however.
+Configuration options are loaded in the following order:
+* Default option (when specified in code)
+* Read from config.yml
+* Dynamic options passed to bot() call at runtime
+* Environment variables - Config options are mapped by uppercasing and prefixing FB_, eg db_url -> FB_DB_URL
+
+Most connectors and modules set up their own configuration variables, which can be found in the appropriate repositories. Some variables are part of the bot itself, though the only two of these you will normally need to modify are db_url and locale. You can change the name and responds_to if you'd like to personalize your bot!
 
 | Name | Description | Default |
 |------|-------------|---------|
@@ -39,26 +45,18 @@ Most connectors and modules set up their own configuration variables, which can 
 | db_url | Mongo Database URL | mongodb://localhost:27017/fritbot |
 | db_debug | Debug all calls to DB | false |
 | locale | Localization option | en |
-| node_directory | Node modules directory. Only used for testing. | node_modules |
-| module_directory | Local modules directory. Only used for testing. | modules |
-
-Configuration options are loaded in the following order:
-* Default option (when specified in code)
-* Read from config.yml
-* Dynamic options passed to bot() call at runtime
-* Environment variables - Config options are mapped by uppercasing and prefixing FB_, eg db_url -> FB_DB_URL
 
 
-Deploying to Heroku
+Deploying to Heroku, etc
 ---
 
-These instructions are designed for Heroku, but other cloud platforms should be supported via similar means. For Heroku, you will need to ensure `Procfile` exists and contains `web: node index.js` exactly - the default fb-instance template contains this. The file describes to Heroku how to launch Fritbot, which as you can see is just as simple as running it locally.
+These instructions are designed for [Heroku](https://www.heroku.com/), but other cloud platforms should be supported via similar means. For Heroku, you will need to ensure `Procfile` exists and contains `web: node index.js` exactly - the default fb-instance template contains this. The file describes to Heroku how to launch Fritbot, which as you can see is just as simple as running it locally.
 
-If you are using one of the Heroku Mongo Add-ons, for example MongoLab, you will need to copy the appropriate URI config variable (ex. `MONGOLAB_URI`) into the `DB_URL` config variable so Fritbot can pick it up appropriately.
+If you are using one of the Heroku Mongo Add-ons, for example MongoLab, you will need to copy the appropriate URI config variable (ex. `MONGOLAB_URI`) into a `FB_DB_URL` config variable so Fritbot can pick it up appropriately.
 
 Heroku employs a system where applications which have not recieved a request in a certain period of time are suspended. To prevent this, you will need to add the [Web UI](https://github.com/Urthen/fb-core-webui) installed with at minimum the Keepalive submodule enabled. The Keepalive submodule will cause the bot to periodically make a request to its own URL, thereby preventing the service from being suspended. See the Web UI readme for more setup information.
 
-At this point, follow the standard [Heroku setup](https://devcenter.heroku.com/articles/getting-started-with-nodejs#deploy-the-app) to deploy your app to Heroku.
+At this point, follow the standard [Heroku setup](https://devcenter.heroku.com/articles/getting-started-with-nodejs#deploy-the-app) to deploy your app to Heroku as normal.
 
 Core Development
 ---

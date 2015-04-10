@@ -25,7 +25,7 @@ function ModuleLoader(bot) {
             return path.join(process.cwd(), bot.config.module_directory, x); // Need to map on full path to modules.
         });
     } catch (e) {
-        console.log('No local modules dir', bot.config.module_directory, '\nThis is fine (unless you thought you created it...)');
+        console.log('No local modules dir', bot.config.module_directory, ', this is fine (unless you thought you created it...)');
     }
 
     // Concatenate full list of modules to load.

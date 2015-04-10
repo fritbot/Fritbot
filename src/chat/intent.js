@@ -3,6 +3,7 @@
 
 var _ = require('lodash');
 var moment = require('moment');
+var domain = require('domain');
 
 function IntentService(bot) {
     this.bot = bot;
@@ -73,7 +74,7 @@ IntentService.prototype.squelched = function (room) {
 };
 
 // Handle a single inbound message along given route
-IntentService.prototype.handleMessage = function (route, message) {
+function handleMessage(route, message) {
     var matches = [],
         isCommand = (route.room === null), // All direct messages are interpreted as commands
         i, matched;
@@ -162,6 +163,23 @@ IntentService.prototype.handleMessage = function (route, message) {
             route.send('?command_not_found');
         }
     }
+}
+
+// Handle message in a domain wrapper to catch errors.
+IntentService.prototype.handleMessage = function (route, message) {
+    var handler_domain = domain.create();
+    handler_domain.add(route);
+    handler_domain.add(message);
+    handler_domain.add(this);
+
+    handler_domain.on('error', function (er) {
+        console.log('Unhandled error processing message:', message, '\n', er.stack);
+        route.send('?generic_error');
+    });
+
+    handler_domain.run(function () {
+        handleMessage.bind(this)(route, message);
+    }.bind(this));
 };
 
 module.exports = IntentService;

@@ -46,12 +46,21 @@ Route.prototype.direct = function () {
 Route.prototype.send = function (message) {
     var deferred = Q.defer();
 
+    // Messages starting with ? are templated with node util.format
     if (message[0] === '?') {
         var args = _.drop(arguments),
             key = message.slice(1),
             locale = this.connector.bot.config.locale;
 
-        message = this.connector.bot.i18n.doTemplate(locale, key, args);
+        try {
+            message = this.connector.bot.i18n.doTemplate(key, args, locale);
+        } catch (e) {
+            // Handle translation errors, usually missing key or malformed value
+            console.log(e.stack);
+
+            // Attempt to send translation error message instead
+            message = this.connector.bot.i18n.doTemplate('translation_error', key);
+        }
     }
 
     console.log('Sending "' + message + '" to ' + this.uid);
