@@ -25,6 +25,7 @@ function Bot(config) {
     configLoader.ensure('name', 'Fritbot', 'Name of the bot');
     configLoader.ensure('responds_to', ['fritbot', 'fb', 'bot'], 'Responds to commands directed at these');
     configLoader.ensure('locale', 'en', 'Default locale language to use');
+    configLoader.ensure('connector', 'shell', 'Chat connector to use');
     configLoader.ensure('node_directory', 'node_modules', null, true);
     configLoader.ensure('module_directory', 'modules', null, true);
 
@@ -74,7 +75,7 @@ Bot.prototype = {
         var connector;
         this.connectors = {};
 
-        if (this.config.connector) {
+        if (this.config.connector && this.config.connector !== 'shell') {
             var module = this.config.connector,
                 modulePath = path.join(process.cwd(), this.config.node_directory, module);
             try {

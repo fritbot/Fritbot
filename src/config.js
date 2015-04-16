@@ -47,7 +47,7 @@ ConfigurationLoader.prototype = {
         // Attempt to read from env
         var env_key = 'FB_' + key.toUpperCase();
         if (process.env[env_key]) {
-            this.config[key] = process.env[key.toUpperCase(env_key)];
+            this.config[key] = process.env[env_key];
         }
 
         if (typeof this.config[key] === 'undefined') {
