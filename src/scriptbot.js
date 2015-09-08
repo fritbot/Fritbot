@@ -15,6 +15,14 @@ function ScriptBot(config) {
     // Load yaml files
     configLoader.loadYml();
 
+    // Defaults
+    configLoader.ensure('name', 'Fritbot', 'Name of the bot');
+    configLoader.ensure('responds_to', ['fritbot', 'fb', 'bot'], 'Responds to commands directed at these');
+    configLoader.ensure('locale', 'en', 'Default locale language to use');
+    configLoader.ensure('connector', 'shell', 'Chat connector to use');
+    configLoader.ensure('node_directory', 'node_modules', null, true);
+    configLoader.ensure('module_directory', 'modules', null, true);
+
     // Store references for modules to use
     this.config = configLoader.config;
     this.configLoader = configLoader;
