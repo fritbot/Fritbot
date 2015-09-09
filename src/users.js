@@ -5,6 +5,7 @@ var room_roster = {};
 
 function UserManager (bot) {
     this.bot = bot;
+    this.bot.db.schemas.user = User;
     this.users = {};
 
     var self = this;

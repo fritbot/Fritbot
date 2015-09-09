@@ -4,7 +4,10 @@ var fs = require('fs'),
 function ModuleLoader(bot) {
     this.bot = bot;
     this.loaded = [];
+    this.bot.events.on('db_connected', this.loadModules.bind(this));
+}
 
+ModuleLoader.prototype.loadModules = function () {
     var npm_modules = [], local_modules = [],
         name, module, modules = [], package_json;
 
@@ -12,20 +15,20 @@ function ModuleLoader(bot) {
 
     // Load modules in the ./node_modules directory
     try {
-        npm_modules = fs.readdirSync(bot.config.node_directory).map(function (x) {
-            return path.join(process.cwd(), bot.config.node_directory, x); // Need to map on full path to modules.
-        });
+        npm_modules = fs.readdirSync(this.bot.config.node_directory).map(function (x) {
+            return path.join(process.cwd(), this.bot.config.node_directory, x); // Need to map on full path to modules.
+        }.bind(this));
     } catch (e) {
-        console.log('Error reading node_modules dir', bot.config.node_directory, '\n', e, '\nWon\'t be loading modules from there.');
+        console.log('Error reading node_modules dir', this.bot.config.node_directory, '\n', e, '\nWon\'t be loading modules from there.');
     }
 
     // Load modules in the ./modules directory
     try {
-        local_modules = fs.readdirSync(bot.config.module_directory).map(function (x) {
-            return path.join(process.cwd(), bot.config.module_directory, x); // Need to map on full path to modules.
-        });
+        local_modules = fs.readdirSync(this.bot.config.module_directory).map(function (x) {
+            return path.join(process.cwd(), this.bot.config.module_directory, x); // Need to map on full path to modules.
+        }.bind(this));
     } catch (e) {
-        console.log('No local modules dir', bot.config.module_directory, ', this is fine (unless you thought you created it...)');
+        console.log('No local modules dir', this.bot.config.module_directory, ', this is fine (unless you thought you created it...)');
     }
 
     // Concatenate full list of modules to load.
@@ -49,7 +52,7 @@ function ModuleLoader(bot) {
                 name : path.basename(name),
                 keywords : ['fritbot-module']
             };
-            if (name.indexOf(bot.config.node_directory) !== -1) {
+            if (name.indexOf(this.bot.config.node_directory) !== -1) {
                 console.log('Error loading package.json for', name, ', skipping this module.\n', e);
                 continue;
             }
@@ -89,7 +92,7 @@ function ModuleLoader(bot) {
 
     console.log('Modules loaded successfully.');
     this.bot.events.emit('modulesLoaded');
-}
+};
 
 ModuleLoader.prototype.loadModule = function (module, package_json, parent, pathname) {
 

@@ -20,7 +20,6 @@ function Bot(config) {
     // Load dynamic configuration
     configLoader.loadConfig(config);
 
-
     // Defaults
     configLoader.ensure('name', 'Fritbot', 'Name of the bot');
     configLoader.ensure('responds_to', ['fritbot', 'fb', 'bot'], 'Responds to commands directed at these');

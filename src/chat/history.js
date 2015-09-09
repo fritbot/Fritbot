@@ -29,6 +29,7 @@ HistoryService.prototype = {
         if (route.user) {
             doc.user_id = route.user.id;
             doc.nickname = route.user.nick;
+            route.user.wasSeen();
         }
 
         Message.create(doc);
